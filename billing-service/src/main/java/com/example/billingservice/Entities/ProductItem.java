@@ -1,7 +1,6 @@
 package com.example.billingservice.Entities;
 
-import com.example.billingservice.models.Product;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,7 +19,4 @@ public class ProductItem {
 
     @ManyToOne
     private Bill bill;
-    @Transient
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private Product product;
 }
