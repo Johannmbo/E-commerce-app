@@ -17,6 +17,7 @@ public class DiscountService {
         this.discountRepository = discountRepository;
     }
 
+    @Transactional
     public Discount create(DiscountDto discountDto) {
         return discountRepository.save(Discount.builder()
                 .id(discountDto.getId())

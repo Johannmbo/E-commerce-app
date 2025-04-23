@@ -1,9 +1,6 @@
 package com.example.customerservice.Entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -11,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter @Builder
+@Table(name = "customers")
 public class customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

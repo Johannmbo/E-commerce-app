@@ -1,4 +1,20 @@
 services:
+  postgres_db:
+    image: postgres:latest
+    container_name: postgres_database
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=ecommerce_app
+    ports:
+          - '5432:5432'
+    volumes:
+      - postgres_db:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   e-commerce-discovery-service:
     build: ./discovery-service
     container_name: e-commerce-discovery-service
@@ -17,7 +33,7 @@ services:
     expose:
       - '9999'
     environment:
-      -DISCOVERY_SERVICE_URL: http://e-commerce-discovery-service:8761/eureka
+      - DISCOVERY_SERVICE_URL=http://e-commerce-discovery-service:8761/eureka
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:9999/actuator/health" ]
       interval: 10s
@@ -32,10 +48,12 @@ services:
     expose:
       - '8082'
     environment:
-      -DISCOVERY_SERVICE_URL: http://e-commerce-discovery-service:8761/eureka
-      -CONFIG_SERVICE_URL: http://e-commerce-config-service:9999
+      - DISCOVERY_SERVICE_URL=http://e-commerce-discovery-service:8761/eureka
+      - CONFIG_SERVICE_URL=http://e-commerce-config-service:9999
     depends_on:
       e-commerce-config-service:
+        condition: service_healthy
+      postgres_db:
         condition: service_healthy
   e-commerce-inventory-service:
     build: ./inventory-service
@@ -45,10 +63,12 @@ services:
     expose:
       - '8083'
     environment:
-      -DISCOVERY_SERVICE_URL: http://e-commerce-discovery-service:8761/eureka
-      -CONFIG_SERVICE_URL: http://e-commerce-config-service:9999
+      - DISCOVERY_SERVICE_URL=http://e-commerce-discovery-service:8761/eureka
+      - CONFIG_SERVICE_URL=http://e-commerce-config-service:9999
     depends_on:
       e-commerce-config-service:
+        condition: service_healthy
+      postgres_db:
         condition: service_healthy
   e-commerce-billing-service:
     build: ./billing-service
@@ -58,10 +78,12 @@ services:
     expose:
       - '8084'
     environment:
-      -DISCOVERY_SERVICE_URL: http://e-commerce-discovery-service:8761/eureka
-      -CONFIG_SERVICE_URL: http://e-commerce-config-service:9999
+      - DISCOVERY_SERVICE_URL=http://e-commerce-discovery-service:8761/eureka
+      - CONFIG_SERVICE_URL=http://e-commerce-config-service:9999
     depends_on:
       e-commerce-config-service:
+        condition: service_healthy
+      postgres_db:
         condition: service_healthy
   e-commerce-order-service:
     build: ./order-service
@@ -71,9 +93,14 @@ services:
     expose:
       - '8085'
     environment:
-      -DISCOVERY_SERVICE_URL: http://e-commerce-discovery-service:8761/eureka
-      -CONFIG_SERVICE_URL: http://e-commerce-config-service:9999
+      - DISCOVERY_SERVICE_URL=http://e-commerce-discovery-service:8761/eureka
+      - CONFIG_SERVICE_URL=http://e-commerce-config-service:9999
     depends_on:
       e-commerce-config-service:
         condition: service_healthy
+      postgres_db:
+        condition: service_healthy
+volumes:
+  postgres_db:
+    driver: local
 

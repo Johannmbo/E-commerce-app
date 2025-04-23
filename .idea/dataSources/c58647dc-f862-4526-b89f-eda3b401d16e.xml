@@ -3,7 +3,7 @@
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.53">
     <root id="1">
       <DateStyle>dmy</DateStyle>
-      <IntrospectionStateNumber>981</IntrospectionStateNumber>
+      <IntrospectionStateNumber>999</IntrospectionStateNumber>
       <ServerVersion>15.4</ServerVersion>
       <StartupTime>1744266587</StartupTime>
       <TimeZones>true ACDT
@@ -805,7 +805,7 @@ false Zulu
 13183||10|C|G
 13183||-9223372036854775808|U|G
 13183||10|U|G</Grants>
-      <IntrospectionStateNumber>981</IntrospectionStateNumber>
+      <IntrospectionStateNumber>999</IntrospectionStateNumber>
       <ObjectId>32936</ObjectId>
       <OwnerName>postgres</OwnerName>
     </database>
@@ -4223,13 +4223,21 @@ false Zulu
     <schema id="263" parent="3" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>981</IntrospectionStateNumber>
-      <LastIntrospectionLocalTimestamp>2025-04-22.12:16:39</LastIntrospectionLocalTimestamp>
+      <IntrospectionStateNumber>999</IntrospectionStateNumber>
+      <LastIntrospectionLocalTimestamp>2025-04-23.15:03:08</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>518</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>
     </schema>
-    <sequence id="264" parent="263" name="customers_id_seq">
+    <sequence id="264" parent="263" name="bills_id_seq">
+      <ObjectId>32944</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>985</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="265" parent="263" name="customers_id_seq">
       <ObjectId>32937</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
       <StartValue>1</StartValue>
@@ -4237,13 +4245,126 @@ false Zulu
       <StoredType>integer|0s</StoredType>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <table id="265" parent="263" name="customers">
+    <sequence id="266" parent="263" name="discount_id_seq">
+      <ObjectId>32958</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>989</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="267" parent="263" name="orderitems_id_seq">
+      <ObjectId>32972</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>993</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="268" parent="263" name="orders_id_seq">
+      <ObjectId>32979</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>994</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="269" parent="263" name="productitems_id_seq">
+      <ObjectId>32951</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>987</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <sequence id="270" parent="263" name="products_id_seq">
+      <ObjectId>32965</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>991</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <OwnerName>postgres</OwnerName>
+    </sequence>
+    <table id="271" parent="263" name="bills">
+      <ObjectId>32945</ObjectId>
+      <StateNumber>985</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="272" parent="263" name="customers">
       <ObjectId>32938</ObjectId>
       <StateNumber>973</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <column id="266" parent="265" name="id">
+    <table id="273" parent="263" name="discount">
+      <ObjectId>32959</ObjectId>
+      <StateNumber>989</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="274" parent="263" name="orderitems">
+      <ObjectId>32973</ObjectId>
+      <StateNumber>993</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="275" parent="263" name="orders">
+      <ObjectId>32980</ObjectId>
+      <StateNumber>994</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="276" parent="263" name="productitems">
+      <ObjectId>32952</ObjectId>
+      <StateNumber>987</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="277" parent="263" name="products">
+      <ObjectId>32966</ObjectId>
+      <StateNumber>991</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <column id="278" parent="271" name="id">
+      <DefaultExpression>nextval(&apos;bills_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>985</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <SequenceId>32944</SequenceId>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="279" parent="271" name="billingdate">
+      <Position>2</Position>
+      <StateNumber>985</StateNumber>
+      <StoredType>date|0s</StoredType>
+      <TypeId>1082</TypeId>
+    </column>
+    <column id="280" parent="271" name="customerid">
+      <Position>3</Position>
+      <StateNumber>985</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <index id="281" parent="271" name="bills_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>32949</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>985</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="282" parent="271" name="bills_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>32950</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>985</StateNumber>
+      <UnderlyingIndexId>32949</UnderlyingIndexId>
+    </key>
+    <column id="283" parent="272" name="id">
       <DefaultExpression>nextval(&apos;customers_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -4252,25 +4373,25 @@ false Zulu
       <SequenceId>32937</SequenceId>
       <TypeId>23</TypeId>
     </column>
-    <column id="267" parent="265" name="name">
+    <column id="284" parent="272" name="name">
       <Position>2</Position>
       <StateNumber>973</StateNumber>
       <StoredType>varchar(100)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="268" parent="265" name="email">
+    <column id="285" parent="272" name="email">
       <Position>3</Position>
       <StateNumber>973</StateNumber>
       <StoredType>varchar(100)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="269" parent="265" name="address">
+    <column id="286" parent="272" name="address">
       <Position>4</Position>
       <StateNumber>973</StateNumber>
       <StoredType>varchar(100)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <index id="270" parent="265" name="customers_pkey">
+    <index id="287" parent="272" name="customers_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>32942</ObjectId>
@@ -4279,12 +4400,227 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="271" parent="265" name="customers_pkey">
+    <key id="288" parent="272" name="customers_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>32943</ObjectId>
       <Primary>1</Primary>
       <StateNumber>973</StateNumber>
       <UnderlyingIndexId>32942</UnderlyingIndexId>
+    </key>
+    <column id="289" parent="273" name="id">
+      <DefaultExpression>nextval(&apos;discount_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>989</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <SequenceId>32958</SequenceId>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="290" parent="273" name="productid">
+      <Position>2</Position>
+      <StateNumber>989</StateNumber>
+      <StoredType>varchar(100)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="291" parent="273" name="discountpercent">
+      <Position>3</Position>
+      <StateNumber>989</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <index id="292" parent="273" name="discount_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>32963</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>989</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="293" parent="273" name="discount_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>32964</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>989</StateNumber>
+      <UnderlyingIndexId>32963</UnderlyingIndexId>
+    </key>
+    <column id="294" parent="274" name="id">
+      <DefaultExpression>nextval(&apos;orderitems_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>993</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <SequenceId>32972</SequenceId>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="295" parent="274" name="quantity">
+      <Position>2</Position>
+      <StateNumber>993</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <index id="296" parent="274" name="orderitems_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>32977</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>993</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="297" parent="274" name="orderitems_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>32978</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>993</StateNumber>
+      <UnderlyingIndexId>32977</UnderlyingIndexId>
+    </key>
+    <column id="298" parent="275" name="id">
+      <DefaultExpression>nextval(&apos;orders_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>994</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <SequenceId>32979</SequenceId>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="299" parent="275" name="orderdate">
+      <Position>2</Position>
+      <StateNumber>994</StateNumber>
+      <StoredType>date|0s</StoredType>
+      <TypeId>1082</TypeId>
+    </column>
+    <column id="300" parent="275" name="orderstatus">
+      <Position>3</Position>
+      <StateNumber>994</StateNumber>
+      <StoredType>varchar(100)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="301" parent="275" name="ordertype">
+      <Position>4</Position>
+      <StateNumber>994</StateNumber>
+      <StoredType>varchar(100)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <index id="302" parent="275" name="orders_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>32984</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>994</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="303" parent="275" name="orders_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>32985</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>994</StateNumber>
+      <UnderlyingIndexId>32984</UnderlyingIndexId>
+    </key>
+    <column id="304" parent="276" name="id">
+      <DefaultExpression>nextval(&apos;productitems_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>987</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <SequenceId>32951</SequenceId>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="305" parent="276" name="productid">
+      <Position>2</Position>
+      <StateNumber>987</StateNumber>
+      <StoredType>varchar(100)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="306" parent="276" name="price">
+      <Position>3</Position>
+      <StateNumber>987</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="307" parent="276" name="quantity">
+      <Position>4</Position>
+      <StateNumber>987</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="308" parent="276" name="productname">
+      <Position>5</Position>
+      <StateNumber>987</StateNumber>
+      <StoredType>varchar(100)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <index id="309" parent="276" name="productitems_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>32956</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>987</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="310" parent="276" name="productitems_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>32957</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>987</StateNumber>
+      <UnderlyingIndexId>32956</UnderlyingIndexId>
+    </key>
+    <column id="311" parent="277" name="id">
+      <DefaultExpression>nextval(&apos;products_id_seq&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>991</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <SequenceId>32965</SequenceId>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="312" parent="277" name="productid">
+      <Position>2</Position>
+      <StateNumber>991</StateNumber>
+      <StoredType>varchar(100)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="313" parent="277" name="name">
+      <Position>3</Position>
+      <StateNumber>991</StateNumber>
+      <StoredType>varchar(100)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="314" parent="277" name="description">
+      <Position>4</Position>
+      <StateNumber>991</StateNumber>
+      <StoredType>varchar(100)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="315" parent="277" name="quality">
+      <Position>5</Position>
+      <StateNumber>991</StateNumber>
+      <StoredType>varchar(100)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="316" parent="277" name="price">
+      <Position>6</Position>
+      <StateNumber>991</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <index id="317" parent="277" name="products_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>32970</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>991</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="318" parent="277" name="products_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>32971</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>991</StateNumber>
+      <UnderlyingIndexId>32970</UnderlyingIndexId>
     </key>
   </database-model>
 </dataSource>

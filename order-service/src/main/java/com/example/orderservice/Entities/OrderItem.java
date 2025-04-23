@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor @NoArgsConstructor
 @Builder
+@Table(name = "orderItems")
 public class OrderItem {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

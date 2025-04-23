@@ -17,6 +17,7 @@ public class OrderItemService {
         this.orderItemRepository = orderItemRepository;
     }
 
+    @Transactional
     public OrderItem create(OrderItemDto orderItemDto){
         new OrderItem();
         return orderItemRepository.save(OrderItem.builder()
