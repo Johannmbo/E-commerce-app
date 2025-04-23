@@ -22,7 +22,7 @@ public class DiscountService {
         return discountRepository.save(Discount.builder()
                 .id(discountDto.getId())
                 .productId(discountDto.getProductId())
-                .discountPercent(Double.parseDouble(String.valueOf(discountDto.getDiscountPercentage())))
+                .discountPercent((int) Double.parseDouble(String.valueOf(discountDto.getDiscountPercentage())))
                 .build());
     }
 
