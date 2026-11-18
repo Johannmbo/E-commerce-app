@@ -35,9 +35,9 @@ Les `Dockerfile` des services copient le JAR déjà compilé (`target/*.jar`) : 
 donc **compiler avant** de construire les images.
 
 ```bash
-# 1. Compiler chaque service (Windows : mvnw.cmd)
+# 1. Compiler chaque service
 for s in discovery-service config-service customer-service inventory-service order-service billing-service; do
-  (cd $s && ./mvnw -DskipTests package)
+  (cd $s && mvn -DskipTests package)
 done
 
 # 2. Construire et lancer
@@ -69,12 +69,12 @@ Ensuite :
 2. **Lancer les services dans cet ordre**, chacun dans son terminal :
 
    ```bash
-   cd discovery-service && ./mvnw spring-boot:run   # attendre http://localhost:8761
-   cd config-service    && ./mvnw spring-boot:run   # attendre http://localhost:9999/actuator/health
-   cd customer-service  && ./mvnw spring-boot:run
-   cd inventory-service && ./mvnw spring-boot:run
-   cd order-service     && ./mvnw spring-boot:run
-   cd billing-service   && ./mvnw spring-boot:run
+   cd discovery-service && mvn spring-boot:run   # attendre http://localhost:8761
+   cd config-service    && mvn spring-boot:run   # attendre http://localhost:9999/actuator/health
+   cd customer-service  && mvn spring-boot:run
+   cd inventory-service && mvn spring-boot:run
+   cd order-service     && mvn spring-boot:run
+   cd billing-service   && mvn spring-boot:run
    ```
 
 3. **Frontend** :
