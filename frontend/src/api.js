@@ -59,8 +59,9 @@ export const api = {
   },
   orderItems: {
     list: () => get(`${O}/listOrderItems`),
-    create: (i) => post(`${O}/addOrderItem`, i),
-    update: (i) => put(`${O}/updateOrderItems`, i),
+    create: ({ orderId, quantity }) => post(`${O}/addOrderItem`, { orderId, quantity }),
+    update: ({ id, orderId, quantity }) =>
+      put(`${O}/updateOrderItems`, { id, quantity, order: orderId ? { id: orderId } : null }),
     remove: (id) => del(`${O}/deleteOrderItem/${id}`),
   },
   bills: {
@@ -71,8 +72,8 @@ export const api = {
   },
   productItems: {
     list: () => get(`${B}/listProductItems`),
-    create: (i) => post(`${B}/addProductItem`, i),
-    update: (i) => put(`${B}/updateProductItem`, i),
+    create: ({ billId, ...i }) => post(`${B}/addProductItem`, { ...i, bill: billId ? { id: billId } : null }),
+    update: ({ billId, ...i }) => put(`${B}/updateProductItem`, { ...i, bill: billId ? { id: billId } : null }),
     remove: (id) => del(`${B}/deleteProductItem/${id}`),
   },
   health: async (prefix) => {

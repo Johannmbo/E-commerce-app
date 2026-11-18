@@ -15,6 +15,7 @@ export default function Bills() {
   const [billEdit, setBillEdit] = useState(null);
   const [lineEdit, setLineEdit] = useState(null);
   const [toDelete, setToDelete] = useState(null);
+  const [billFilter, setBillFilter] = useState('');
 
   const customerById = useMemo(() => Object.fromEntries(customers.data.map((c) => [c.id, c])), [customers.data]);
   const productByRef = useMemo(() => Object.fromEntries(products.data.map((p) => [p.productId, p])), [products.data]);
@@ -23,7 +24,17 @@ export default function Bills() {
     [discounts.data]
   );
 
-  const total = lines.data.reduce((s, l) => s + l.price * l.quantity, 0);
+  const billNo = (id) => `FAC-${String(id).padStart(4, '0')}`;
+  const sum = (items = []) => items.reduce((s, l) => s + l.price * l.quantity, 0);
+  const sortedBills = useMemo(() => [...bills.data].sort((a, b) => b.id - a.id), [bills.data]);
+  const visibleLines = useMemo(
+    () =>
+      [...lines.data]
+        .filter((l) => !billFilter || String(l.bill?.id) === String(billFilter))
+        .sort((a, b) => a.id - b.id),
+    [lines.data, billFilter]
+  );
+  const total = sum(visibleLines);
 
   const saveBill = async () => {
     const f = billEdit.form;
@@ -40,17 +51,24 @@ export default function Bills() {
     const p = productByRef[f.productId];
     const payload = {
       productId: f.productId,
+      productName: p?.name || lineEdit.original?.productName || null,
       price: parseInt(f.price, 10) || 0,
       quantity: parseInt(f.quantity, 10) || 0,
+      billId: f.billId ? Number(f.billId) : null,
     };
     const ok = await run(
       () =>
         lineEdit.original
-          ? api.productItems.update({ ...payload, id: lineEdit.original.id, productName: p?.name || lineEdit.original.productName })
+          ? api.productItems.update({ ...payload, id: lineEdit.original.id })
           : api.productItems.create(payload),
       lineEdit.original ? 'Ligne mise à jour' : 'Ligne ajoutée'
     );
     if (ok) setLineEdit(null);
+  };
+
+  const openNewLine = (billId) => {
+    const ref = products.data[0]?.productId || '';
+    setLineEdit({ form: { billId, productId: ref, price: unitPrice(ref), quantity: '1' }, original: null });
   };
 
   const unitPrice = (ref) => {
@@ -78,17 +96,24 @@ export default function Bills() {
             + Nouvelle facture
           </button>
         ) : (
-          <button
-            className="btn primary"
-            disabled={!products.data.length}
-            title={!products.data.length ? 'Ajoutez d’abord un produit' : undefined}
-            onClick={() => {
-              const ref = products.data[0]?.productId || '';
-              setLineEdit({ form: { productId: ref, price: unitPrice(ref), quantity: '1' }, original: null });
-            }}
-          >
-            + Nouvelle ligne
-          </button>
+          <>
+            <select className="select" value={billFilter} onChange={(e) => setBillFilter(e.target.value)} aria-label="Filtrer par facture">
+              <option value="">Toutes les factures</option>
+              {sortedBills.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {billNo(b.id)}
+                </option>
+              ))}
+            </select>
+            <button
+              className="btn primary"
+              disabled={!products.data.length || !bills.data.length}
+              title={!bills.data.length ? 'Créez d’abord une facture' : !products.data.length ? 'Ajoutez d’abord un produit' : undefined}
+              onClick={() => openNewLine(billFilter || String(sortedBills[0]?.id ?? ''))}
+            >
+              + Nouvelle ligne
+            </button>
+          </>
         )}
       </PageHead>
 
@@ -117,17 +142,17 @@ export default function Bills() {
                   <th>N°</th>
                   <th>Date</th>
                   <th>Client</th>
+                  <th className="num">Lignes</th>
+                  <th className="num">Total</th>
                   <th />
                 </tr>
               </thead>
               <tbody>
-                {[...bills.data]
-                  .sort((a, b) => b.id - a.id)
-                  .map((b) => {
+                {sortedBills.map((b) => {
                     const c = customerById[b.customerId];
                     return (
                       <tr key={b.id}>
-                        <td className="mono">FAC-{String(b.id).padStart(4, '0')}</td>
+                        <td className="mono">{billNo(b.id)}</td>
                         <td>{fmtDate(b.billingDate)}</td>
                         <td>
                           {c ? (
@@ -139,6 +164,21 @@ export default function Bills() {
                             <span className="muted">Client #{b.customerId} (introuvable)</span>
                           )}
                         </td>
+                        <td className="num">
+                          <button
+                            className="link-btn"
+                            title="Voir les lignes de cette facture"
+                            onClick={() => {
+                              setBillFilter(String(b.id));
+                              setTab('lines');
+                            }}
+                          >
+                            {b.productItems?.length || 0}
+                          </button>
+                        </td>
+                        <td className="num">
+                          <strong>{money(sum(b.productItems))}</strong>
+                        </td>
                         <td>
                           <RowActions
                             onEdit={() =>
@@ -148,7 +188,19 @@ export default function Bills() {
                               })
                             }
                             onDelete={() => setToDelete({ kind: 'bill', obj: b })}
-                          />
+                          >
+                            <button
+                              className="btn ghost sm"
+                              disabled={!products.data.length}
+                              onClick={() => {
+                                setTab('lines');
+                                setBillFilter(String(b.id));
+                                openNewLine(String(b.id));
+                              }}
+                            >
+                              + Ligne
+                            </button>
+                          </RowActions>
                         </td>
                       </tr>
                     );
@@ -161,23 +213,20 @@ export default function Bills() {
 
       {tab === 'lines' && (
         <>
-          <p className="notice">
-            Les lignes sont enregistrées sans lien vers leur facture (le champ <code>bill</code> n’est pas persisté par{' '}
-            <code>ProductItemService.create</code>). Le nom du produit est retrouvé dans l’inventaire grâce à la référence.
-          </p>
           <div className="card flush">
             <StateBlock
               loading={lines.loading && !lines.data.length}
               error={lines.error}
               onRetry={lines.reload}
-              empty={!lines.data.length}
-              emptyText="Aucune ligne facturée."
+              empty={!visibleLines.length}
+              emptyText={billFilter ? `Aucune ligne sur ${billNo(billFilter)}.` : 'Aucune ligne facturée.'}
             />
-            {!lines.error && lines.data.length > 0 && (
+            {!lines.error && visibleLines.length > 0 && (
               <table className="table">
                 <thead>
                   <tr>
                     <th>N°</th>
+                    <th>Facture</th>
                     <th>Produit</th>
                     <th className="num">Prix unitaire</th>
                     <th className="num">Qté</th>
@@ -186,15 +235,14 @@ export default function Bills() {
                   </tr>
                 </thead>
                 <tbody>
-                  {[...lines.data]
-                    .sort((a, b) => a.id - b.id)
-                    .map((l) => {
+                  {visibleLines.map((l) => {
                       const p = productByRef[l.productId];
                       return (
                         <tr key={l.id}>
                           <td className="mono muted">#{l.id}</td>
+                          <td className="mono">{l.bill ? billNo(l.bill.id) : <span className="muted">—</span>}</td>
                           <td>
-                            <strong>{p ? p.name : 'Produit inconnu'}</strong>
+                            <strong>{p ? p.name : l.productName || 'Produit inconnu'}</strong>
                             <div className="muted small mono">{l.productId}</div>
                           </td>
                           <td className="num">{money(l.price)}</td>
@@ -206,7 +254,12 @@ export default function Bills() {
                             <RowActions
                               onEdit={() =>
                                 setLineEdit({
-                                  form: { productId: l.productId, price: String(l.price), quantity: String(l.quantity) },
+                                  form: {
+                                    billId: l.bill ? String(l.bill.id) : '',
+                                    productId: l.productId,
+                                    price: String(l.price),
+                                    quantity: String(l.quantity),
+                                  },
                                   original: l,
                                 })
                               }
@@ -219,8 +272,8 @@ export default function Bills() {
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td colSpan={4} className="num">
-                      Total facturé
+                    <td colSpan={5} className="num">
+                      {billFilter ? `Total ${billNo(billFilter)}` : 'Total facturé'}
                     </td>
                     <td className="num">
                       <strong>{money(total)}</strong>
@@ -288,7 +341,7 @@ export default function Bills() {
               </button>
               <button
                 className="btn primary"
-                disabled={busy || !lf.productId || !(parseInt(lf.quantity, 10) > 0) || lf.price === ''}
+                disabled={busy || !lf.billId || !lf.productId || !(parseInt(lf.quantity, 10) > 0) || lf.price === ''}
                 onClick={saveLine}
               >
                 Enregistrer
@@ -297,6 +350,16 @@ export default function Bills() {
           }
         >
           <div className="form-grid">
+            <Field label="Facture *" wide>
+              <select value={lf.billId} onChange={(e) => setLineEdit((s) => ({ ...s, form: { ...s.form, billId: e.target.value } }))}>
+                {!lf.billId && <option value="">Choisir…</option>}
+                {sortedBills.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {billNo(b.id)} · {customerById[b.customerId]?.name || `client #${b.customerId}`} · {fmtDate(b.billingDate)}
+                  </option>
+                ))}
+              </select>
+            </Field>
             <Field label="Produit *" wide>
               <select
                 value={lf.productId}
@@ -336,7 +399,7 @@ export default function Bills() {
 
       {toDelete && (
         <Confirm
-          text={toDelete.kind === 'bill' ? `Supprimer la facture FAC-${String(toDelete.obj.id).padStart(4, '0')} ?` : `Supprimer la ligne #${toDelete.obj.id} ?`}
+          text={toDelete.kind === 'bill' ? `Supprimer la facture ${billNo(toDelete.obj.id)} et ses ${toDelete.obj.productItems?.length || 0} ligne(s) ?` : `Supprimer la ligne #${toDelete.obj.id} ?`}
           busy={busy}
           onConfirm={async () => {
             const ok = await run(

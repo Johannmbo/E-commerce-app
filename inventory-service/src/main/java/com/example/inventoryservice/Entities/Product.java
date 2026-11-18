@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @AllArgsConstructor @NoArgsConstructor
@@ -21,8 +23,12 @@ public class Product {
     private String quality;
     private int price;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id", referencedColumnName = "id") // Внешний ключ
+    // Clé étrangère dédiée : "id" est déjà la clé primaire du produit.
+    // La remise est rattachée automatiquement via productId (voir ProductService / DiscountService).
+    @OneToOne(fetch = FetchType.EAGER, optional = true)
+    @JoinColumn(name = "discount_id", referencedColumnName = "id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Discount discount;
 
 }

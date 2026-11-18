@@ -15,7 +15,8 @@ export default function Products() {
   const [editing, setEditing] = useState(null); // null | {form, original}
   const [toDelete, setToDelete] = useState(null);
 
-  // Le service ne lie pas encore Product.discount : on rapproche par productId
+  // Remise d'un produit : celle qui porte la même référence (productId),
+  // comme côté serveur (ProductService / DiscountService)
   const discountByProduct = useMemo(() => {
     const m = {};
     for (const d of discounts.data) if (d.productId) m[d.productId] = d;

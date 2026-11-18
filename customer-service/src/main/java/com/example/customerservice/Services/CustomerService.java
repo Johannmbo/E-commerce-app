@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -40,7 +41,7 @@ public class CustomerService {
         customerRepository.deleteById(id);
     }
 
-    public void findCustomerById(long id){
-        customerRepository.findById(id);
+    public Optional<customer> findCustomerById(long id){
+        return customerRepository.findById(id);
     }
 }

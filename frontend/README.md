@@ -32,16 +32,27 @@ Options (variables d'environnement) :
 
 ## Docker
 
-Le service `e-commerce-frontend` est déclaré dans `docker-compose.yml`
-(nginx sur le port **3000**, qui relaie les appels vers les conteneurs des services).
+Ajouter ce service dans `docker-compose.yml` (nginx sur le port **3000**, qui relaie
+les appels vers les conteneurs des services) :
 
-## Limites connues du backend (contournées côté interface)
+```yaml
+  e-commerce-frontend:
+    build: ./frontend
+    container_name: e-commerce-frontend
+    ports:
+      - '3000:80'
+    depends_on:
+      - e-commerce-customer-service
+      - e-commerce-inventory-service
+      - e-commerce-billing-service
+      - e-commerce-order-service
+```
 
-- La remise n'est pas liée au produit (`Product.discount` reste `null`) : l'interface
-  rapproche remises et produits par leur référence `productId`.
-- Les lignes de commande et les lignes facturées sont enregistrées sans lien vers
-  leur commande / facture : elles sont affichées dans des onglets séparés.
-- Relier ces entités via les endpoints `update…` provoque une récursion JSON infinie
-  (relations bidirectionnelles sans `@JsonIgnore` / `@JsonManagedReference`), c'est
-  pourquoi l'interface ne le fait pas.
-- `GET /customer-service/findCustomer/{id}` renvoie toujours un corps vide.
+## Liaisons entre les données
+
+Elles reposent sur les correctifs backend de novembre 2026 :
+
+- une remise est rattachée au produit qui porte la même référence (`productId`) ;
+- une ligne de commande est rattachée à sa commande (`orderId`) ;
+- une ligne facturée est rattachée à sa facture (`bill.id`) ;
+- supprimer une commande ou une facture supprime aussi ses lignes.

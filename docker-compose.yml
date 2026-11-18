@@ -1,6 +1,4 @@
 services:
-<<<<<<< HEAD
-=======
   postgres_db:
     image: postgres:latest
     container_name: postgres_database
@@ -17,7 +15,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
->>>>>>> da9bb9b1041c37dc0718d642a58f72301dc6b95e
   e-commerce-discovery-service:
     build: ./discovery-service
     container_name: e-commerce-discovery-service
@@ -36,11 +33,7 @@ services:
     expose:
       - '9999'
     environment:
-<<<<<<< HEAD
-      -DISCOVERY_SERVICE_URL: http://e-commerce-discovery-service:8761/eureka
-=======
       - DISCOVERY_SERVICE_URL=http://e-commerce-discovery-service:8761/eureka
->>>>>>> da9bb9b1041c37dc0718d642a58f72301dc6b95e
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:9999/actuator/health" ]
       interval: 10s
@@ -55,13 +48,6 @@ services:
     expose:
       - '8082'
     environment:
-<<<<<<< HEAD
-      -DISCOVERY_SERVICE_URL: http://e-commerce-discovery-service:8761/eureka
-      -CONFIG_SERVICE_URL: http://e-commerce-config-service:9999
-    depends_on:
-      e-commerce-config-service:
-        condition: service_healthy
-=======
       - DISCOVERY_SERVICE_URL=http://e-commerce-discovery-service:8761/eureka
       - CONFIG_SERVICE_URL=http://e-commerce-config-service:9999
     depends_on:
@@ -69,7 +55,6 @@ services:
         condition: service_healthy
       postgres_db:
         condition: service_healthy
->>>>>>> da9bb9b1041c37dc0718d642a58f72301dc6b95e
   e-commerce-inventory-service:
     build: ./inventory-service
     container_name: e-commerce-inventory-service
@@ -78,13 +63,6 @@ services:
     expose:
       - '8083'
     environment:
-<<<<<<< HEAD
-      -DISCOVERY_SERVICE_URL: http://e-commerce-discovery-service:8761/eureka
-      -CONFIG_SERVICE_URL: http://e-commerce-config-service:9999
-    depends_on:
-      e-commerce-config-service:
-        condition: service_healthy
-=======
       - DISCOVERY_SERVICE_URL=http://e-commerce-discovery-service:8761/eureka
       - CONFIG_SERVICE_URL=http://e-commerce-config-service:9999
     depends_on:
@@ -92,7 +70,6 @@ services:
         condition: service_healthy
       postgres_db:
         condition: service_healthy
->>>>>>> da9bb9b1041c37dc0718d642a58f72301dc6b95e
   e-commerce-billing-service:
     build: ./billing-service
     container_name: e-commerce-billing-service
@@ -101,13 +78,6 @@ services:
     expose:
       - '8084'
     environment:
-<<<<<<< HEAD
-      -DISCOVERY_SERVICE_URL: http://e-commerce-discovery-service:8761/eureka
-      -CONFIG_SERVICE_URL: http://e-commerce-config-service:9999
-    depends_on:
-      e-commerce-config-service:
-        condition: service_healthy
-=======
       - DISCOVERY_SERVICE_URL=http://e-commerce-discovery-service:8761/eureka
       - CONFIG_SERVICE_URL=http://e-commerce-config-service:9999
     depends_on:
@@ -115,7 +85,6 @@ services:
         condition: service_healthy
       postgres_db:
         condition: service_healthy
->>>>>>> da9bb9b1041c37dc0718d642a58f72301dc6b95e
   e-commerce-order-service:
     build: ./order-service
     container_name: e-commerce-order-service
@@ -124,13 +93,6 @@ services:
     expose:
       - '8085'
     environment:
-<<<<<<< HEAD
-      -DISCOVERY_SERVICE_URL: http://e-commerce-discovery-service:8761/eureka
-      -CONFIG_SERVICE_URL: http://e-commerce-config-service:9999
-    depends_on:
-      e-commerce-config-service:
-        condition: service_healthy
-=======
       - DISCOVERY_SERVICE_URL=http://e-commerce-discovery-service:8761/eureka
       - CONFIG_SERVICE_URL=http://e-commerce-config-service:9999
     depends_on:
@@ -141,4 +103,83 @@ services:
 volumes:
   postgres_db:
     driver: local
->>>>>>> da9bb9b1041c37dc0718d642a58f72301dc6b95e
+
+services:
+  e-commerce-discovery-service:
+    build: ./discovery-service
+    container_name: e-commerce-discovery-service
+    ports:
+      - '8761:8761'
+    expose:
+      - '8761'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+  e-commerce-config-service:
+    build: ./config-service
+    container_name: e-commerce-config-service
+    ports:
+      - '9999:9999'
+    expose:
+      - '9999'
+    environment:
+      -DISCOVERY_SERVICE_URL: http://e-commerce-discovery-service:8761/eureka
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9999/actuator/health" ]
+      interval: 10s
+    depends_on:
+      e-commerce-discovery-service:
+        condition: service_healthy
+  e-commerce-customer-service:
+    build: ./customer-service
+    container_name: e-commerce-customer-service
+    ports:
+      - '8082:8082'
+    expose:
+      - '8082'
+    environment:
+      -DISCOVERY_SERVICE_URL: http://e-commerce-discovery-service:8761/eureka
+      -CONFIG_SERVICE_URL: http://e-commerce-config-service:9999
+    depends_on:
+      e-commerce-config-service:
+        condition: service_healthy
+  e-commerce-inventory-service:
+    build: ./inventory-service
+    container_name: e-commerce-inventory-service
+    ports:
+      - '8083:8083'
+    expose:
+      - '8083'
+    environment:
+      -DISCOVERY_SERVICE_URL: http://e-commerce-discovery-service:8761/eureka
+      -CONFIG_SERVICE_URL: http://e-commerce-config-service:9999
+    depends_on:
+      e-commerce-config-service:
+        condition: service_healthy
+  e-commerce-billing-service:
+    build: ./billing-service
+    container_name: e-commerce-billing-service
+    ports:
+      - '8084:8084'
+    expose:
+      - '8084'
+    environment:
+      -DISCOVERY_SERVICE_URL: http://e-commerce-discovery-service:8761/eureka
+      -CONFIG_SERVICE_URL: http://e-commerce-config-service:9999
+    depends_on:
+      e-commerce-config-service:
+        condition: service_healthy
+  e-commerce-order-service:
+    build: ./order-service
+    container_name: e-commerce-order-service
+    ports:
+      - '8085:8085'
+    expose:
+      - '8085'
+    environment:
+      -DISCOVERY_SERVICE_URL: http://e-commerce-discovery-service:8761/eureka
+      -CONFIG_SERVICE_URL: http://e-commerce-config-service:9999
+    depends_on:
+      e-commerce-config-service:
+        condition: service_healthy
+

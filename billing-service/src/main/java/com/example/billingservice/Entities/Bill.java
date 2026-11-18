@@ -1,10 +1,13 @@
 package com.example.billingservice.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import java.util.Date;
 import java.util.List;
 
@@ -20,7 +23,11 @@ public class Bill {
     private Long id;
     private Date billingDate;
     private long customerId;
-    @OneToMany(mappedBy = "bill")
+    // Supprimer une facture supprime ses lignes ; en JSON, les lignes n'incluent pas la facture
+    @OneToMany(mappedBy = "bill", cascade = CascadeType.REMOVE)
+    @JsonIgnoreProperties(value = {"bill"}, allowSetters = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<ProductItem> productItems;
 
 }

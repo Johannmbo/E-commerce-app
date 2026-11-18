@@ -17,6 +17,7 @@ export default function Orders() {
   const [editing, setEditing] = useState(null);
   const [itemEdit, setItemEdit] = useState(null);
   const [toDelete, setToDelete] = useState(null);
+  const [orderFilter, setOrderFilter] = useState('');
 
   const allStatuses = useMemo(
     () => [...new Set([...STATUSES, ...orders.data.map((o) => o.orderStatus).filter(Boolean)])],
@@ -30,6 +31,14 @@ export default function Orders() {
       .filter((o) => !s || `#${o.id} ${o.orderType} ${o.orderStatus}`.toLowerCase().includes(s))
       .sort((a, b) => (b.id || 0) - (a.id || 0));
   }, [orders.data, q, status]);
+
+  const visibleItems = useMemo(
+    () =>
+      [...items.data]
+        .filter((i) => !orderFilter || String(i.order?.id) === String(orderFilter))
+        .sort((a, b) => a.id - b.id),
+    [items.data, orderFilter]
+  );
 
   const saveOrder = async () => {
     const f = editing.form;
@@ -47,13 +56,16 @@ export default function Orders() {
   const quickStatus = (o, s) =>
     run(() => api.orders.update({ id: o.id, orderDate: o.orderDate, orderType: o.orderType, orderStatus: s }), `Commande #${o.id} : ${s}`);
 
+  const newestOrderId = () => String([...orders.data].sort((a, b) => b.id - a.id)[0]?.id ?? '');
+
   const saveItem = async () => {
     const qty = parseInt(itemEdit.form.quantity, 10) || 0;
+    const orderId = itemEdit.form.orderId ? Number(itemEdit.form.orderId) : null;
     const ok = await run(
       () =>
         itemEdit.original
-          ? api.orderItems.update({ id: itemEdit.original.id, quantity: qty })
-          : api.orderItems.create({ quantity: qty }),
+          ? api.orderItems.update({ id: itemEdit.original.id, orderId, quantity: qty })
+          : api.orderItems.create({ orderId, quantity: qty }),
       itemEdit.original ? 'Ligne mise à jour' : 'Ligne ajoutée'
     );
     if (ok) setItemEdit(null);
@@ -84,9 +96,33 @@ export default function Orders() {
             </button>
           </>
         ) : (
-          <button className="btn primary" onClick={() => setItemEdit({ form: { quantity: '1' }, original: null })}>
-            + Nouvelle ligne
-          </button>
+          <>
+            <select
+              className="select"
+              value={orderFilter}
+              onChange={(e) => setOrderFilter(e.target.value)}
+              aria-label="Filtrer par commande"
+            >
+              <option value="">Toutes les commandes</option>
+              {[...orders.data]
+                .sort((a, b) => b.id - a.id)
+                .map((o) => (
+                  <option key={o.id} value={o.id}>
+                    Commande #{o.id}
+                  </option>
+                ))}
+            </select>
+            <button
+              className="btn primary"
+              disabled={!orders.data.length}
+              title={!orders.data.length ? 'Créez d’abord une commande' : undefined}
+              onClick={() =>
+                setItemEdit({ form: { orderId: orderFilter || newestOrderId(), quantity: '1' }, original: null })
+              }
+            >
+              + Nouvelle ligne
+            </button>
+          </>
         )}
       </PageHead>
 
@@ -139,7 +175,18 @@ export default function Orders() {
                         ))}
                       </select>
                     </td>
-                    <td className="num">{Array.isArray(o.orderItem) ? o.orderItem.length : 0}</td>
+                    <td className="num">
+                      <button
+                        className="link-btn"
+                        onClick={() => {
+                          setOrderFilter(String(o.id));
+                          setTab('items');
+                        }}
+                        title="Voir les lignes de cette commande"
+                      >
+                        {Array.isArray(o.orderItem) ? o.orderItem.length : 0}
+                      </button>
+                    </td>
                     <td>
                       <RowActions
                         onEdit={() =>
@@ -165,37 +212,47 @@ export default function Orders() {
 
       {tab === 'items' && (
         <>
-          <p className="notice">
-            Le service enregistre la quantité des lignes, mais pas encore la commande à laquelle elles appartiennent
-            (<code>orderId</code> est ignoré par <code>OrderItemService.create</code>). Elles sont donc listées à part.
-          </p>
           <div className="card flush">
             <StateBlock
               loading={items.loading && !items.data.length}
               error={items.error}
               onRetry={items.reload}
-              empty={!items.data.length}
-              emptyText="Aucune ligne de commande."
+              empty={!visibleItems.length}
+              emptyText={orderFilter ? `Aucune ligne pour la commande #${orderFilter}.` : 'Aucune ligne de commande.'}
             />
-            {!items.error && items.data.length > 0 && (
+            {!items.error && visibleItems.length > 0 && (
               <table className="table">
                 <thead>
                   <tr>
                     <th>N° ligne</th>
+                    <th>Commande</th>
                     <th className="num">Quantité</th>
                     <th />
                   </tr>
                 </thead>
                 <tbody>
-                  {[...items.data]
-                    .sort((a, b) => a.id - b.id)
-                    .map((i) => (
+                  {visibleItems.map((i) => (
                       <tr key={i.id}>
-                        <td className="mono">#{i.id}</td>
+                        <td className="mono muted">#{i.id}</td>
+                        <td>
+                          {i.order ? (
+                            <>
+                              <span className="mono">#{i.order.id}</span>{' '}
+                              <span className={`badge ${statusClass(i.order.orderStatus)}`}>{i.order.orderStatus || '—'}</span>
+                            </>
+                          ) : (
+                            <span className="muted">Non rattachée</span>
+                          )}
+                        </td>
                         <td className="num">{i.quantity}</td>
                         <td>
                           <RowActions
-                            onEdit={() => setItemEdit({ form: { quantity: String(i.quantity) }, original: i })}
+                            onEdit={() =>
+                              setItemEdit({
+                                form: { orderId: i.order ? String(i.order.id) : '', quantity: String(i.quantity) },
+                                original: i,
+                              })
+                            }
                             onDelete={() => setToDelete({ kind: 'item', obj: i })}
                           />
                         </td>
@@ -256,7 +313,7 @@ export default function Orders() {
         <Modal
           title={itemEdit.original ? `Ligne #${itemEdit.original.id}` : 'Nouvelle ligne de commande'}
           onClose={() => setItemEdit(null)}
-          width={380}
+          width={420}
           footer={
             <>
               <button className="btn ghost" onClick={() => setItemEdit(null)}>
@@ -264,7 +321,7 @@ export default function Orders() {
               </button>
               <button
                 className="btn primary"
-                disabled={busy || !(parseInt(itemEdit.form.quantity, 10) > 0)}
+                disabled={busy || !itemEdit.form.orderId || !(parseInt(itemEdit.form.quantity, 10) > 0)}
                 onClick={saveItem}
               >
                 Enregistrer
@@ -272,22 +329,39 @@ export default function Orders() {
             </>
           }
         >
-          <Field label="Quantité *">
-            <input
-              type="number"
-              min="1"
-              step="1"
-              autoFocus
-              value={itemEdit.form.quantity}
-              onChange={(e) => setItemEdit((s) => ({ ...s, form: { quantity: e.target.value } }))}
-            />
-          </Field>
+          <div className="form-grid">
+            <Field label="Commande *">
+              <select
+                value={itemEdit.form.orderId}
+                onChange={(e) => setItemEdit((s) => ({ ...s, form: { ...s.form, orderId: e.target.value } }))}
+              >
+                {!itemEdit.form.orderId && <option value="">Choisir…</option>}
+                {[...orders.data]
+                  .sort((a, b) => b.id - a.id)
+                  .map((o) => (
+                    <option key={o.id} value={o.id}>
+                      #{o.id} · {fmtDate(o.orderDate)} · {o.orderStatus}
+                    </option>
+                  ))}
+              </select>
+            </Field>
+            <Field label="Quantité *">
+              <input
+                type="number"
+                min="1"
+                step="1"
+                autoFocus
+                value={itemEdit.form.quantity}
+                onChange={(e) => setItemEdit((s) => ({ ...s, form: { ...s.form, quantity: e.target.value } }))}
+              />
+            </Field>
+          </div>
         </Modal>
       )}
 
       {toDelete && (
         <Confirm
-          text={toDelete.kind === 'order' ? `Supprimer la commande #${toDelete.obj.id} ?` : `Supprimer la ligne #${toDelete.obj.id} ?`}
+          text={toDelete.kind === 'order' ? `Supprimer la commande #${toDelete.obj.id} et ses ${toDelete.obj.orderItem?.length || 0} ligne(s) ?` : `Supprimer la ligne #${toDelete.obj.id} ?`}
           busy={busy}
           onConfirm={async () => {
             const ok = await run(

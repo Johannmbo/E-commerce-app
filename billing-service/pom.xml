@@ -73,15 +73,11 @@
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
 			<version>4.2.0</version>
 		</dependency>
-<<<<<<< HEAD
-
-=======
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>42.7.1</version>
 		</dependency>
->>>>>>> da9bb9b1041c37dc0718d642a58f72301dc6b95e
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

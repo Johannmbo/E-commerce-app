@@ -196,3 +196,6 @@ button.kpi:hover { border-color: #cfccc4; }
 .toasts { position: fixed; right: 20px; bottom: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 60; }
 .toast { background: var(--ink); color: #fff; padding: 10px 14px; border-radius: 8px; box-shadow: var(--shadow); font-size: 13px; max-width: 360px; animation: pop 0.15s ease-out; }
 .toast-err { background: var(--danger); }
+
+.link-btn { font: inherit; font-variant-numeric: tabular-nums; background: none; border: 0; padding: 2px 6px; border-radius: 6px; color: var(--accent); font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.link-btn:hover { background: var(--accent-soft); }

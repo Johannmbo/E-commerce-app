@@ -158,9 +158,10 @@ export function Search({ value, onChange, placeholder = 'Rechercher…' }) {
   );
 }
 
-export function RowActions({ onEdit, onDelete }) {
+export function RowActions({ onEdit, onDelete, children }) {
   return (
     <div className="row-actions">
+      {children}
       {onEdit && (
         <button className="btn ghost sm" onClick={onEdit}>
           Modifier

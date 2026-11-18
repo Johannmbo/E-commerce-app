@@ -2,7 +2,6 @@ package com.example.billingservice.Services;
 
 import com.example.billingservice.Dto.BillDto;
 import com.example.billingservice.Entities.Bill;
-import com.example.billingservice.Entities.ProductItem;
 import com.example.billingservice.Repository.BillRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,6 @@ public class BillService {
                 .id(billDto.getId())
                 .billingDate(billDto.getBillingDate())
                 .customerId(billDto.getCustomerId())
-                .productItems((List<ProductItem>) billDto.getProductItem())
                 .build()
         );
     }
