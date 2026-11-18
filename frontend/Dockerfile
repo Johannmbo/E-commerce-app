@@ -1,4 +1,5 @@
-FROM node:20-alpine AS build
+# Debian (glibc) plutôt qu'Alpine : le parseur natif de Rollup échoue sous musl
+FROM node:20-slim AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
