@@ -10,5 +10,6 @@ public class ProductItemDto {
     private String productId;
     private int price;
     private int quantity;
+    private String productName;
     private BillDto bill;
 }

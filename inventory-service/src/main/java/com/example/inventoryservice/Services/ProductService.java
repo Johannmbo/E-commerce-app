@@ -19,6 +19,7 @@ public class ProductService {
         this.productRepository = productRepository;
 
     }
+    @Transactional
     public Product create(ProductDto productDto) {
         return productRepository.save(Product.builder()
                 .id(productDto.getId())

@@ -16,6 +16,7 @@ public class OrderService {
     public OrderService(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
     }
+    @Transactional
 
     public Orders create(OrderDto orderDto) {
         new Orders();

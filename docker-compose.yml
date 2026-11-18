@@ -1,4 +1,23 @@
 services:
+<<<<<<< HEAD
+=======
+  postgres_db:
+    image: postgres:latest
+    container_name: postgres_database
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=ecommerce_app
+    ports:
+          - '5432:5432'
+    volumes:
+      - postgres_db:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+>>>>>>> da9bb9b1041c37dc0718d642a58f72301dc6b95e
   e-commerce-discovery-service:
     build: ./discovery-service
     container_name: e-commerce-discovery-service
@@ -17,7 +36,11 @@ services:
     expose:
       - '9999'
     environment:
+<<<<<<< HEAD
       -DISCOVERY_SERVICE_URL: http://e-commerce-discovery-service:8761/eureka
+=======
+      - DISCOVERY_SERVICE_URL=http://e-commerce-discovery-service:8761/eureka
+>>>>>>> da9bb9b1041c37dc0718d642a58f72301dc6b95e
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:9999/actuator/health" ]
       interval: 10s
@@ -32,11 +55,21 @@ services:
     expose:
       - '8082'
     environment:
+<<<<<<< HEAD
       -DISCOVERY_SERVICE_URL: http://e-commerce-discovery-service:8761/eureka
       -CONFIG_SERVICE_URL: http://e-commerce-config-service:9999
     depends_on:
       e-commerce-config-service:
         condition: service_healthy
+=======
+      - DISCOVERY_SERVICE_URL=http://e-commerce-discovery-service:8761/eureka
+      - CONFIG_SERVICE_URL=http://e-commerce-config-service:9999
+    depends_on:
+      e-commerce-config-service:
+        condition: service_healthy
+      postgres_db:
+        condition: service_healthy
+>>>>>>> da9bb9b1041c37dc0718d642a58f72301dc6b95e
   e-commerce-inventory-service:
     build: ./inventory-service
     container_name: e-commerce-inventory-service
@@ -45,11 +78,21 @@ services:
     expose:
       - '8083'
     environment:
+<<<<<<< HEAD
       -DISCOVERY_SERVICE_URL: http://e-commerce-discovery-service:8761/eureka
       -CONFIG_SERVICE_URL: http://e-commerce-config-service:9999
     depends_on:
       e-commerce-config-service:
         condition: service_healthy
+=======
+      - DISCOVERY_SERVICE_URL=http://e-commerce-discovery-service:8761/eureka
+      - CONFIG_SERVICE_URL=http://e-commerce-config-service:9999
+    depends_on:
+      e-commerce-config-service:
+        condition: service_healthy
+      postgres_db:
+        condition: service_healthy
+>>>>>>> da9bb9b1041c37dc0718d642a58f72301dc6b95e
   e-commerce-billing-service:
     build: ./billing-service
     container_name: e-commerce-billing-service
@@ -58,11 +101,21 @@ services:
     expose:
       - '8084'
     environment:
+<<<<<<< HEAD
       -DISCOVERY_SERVICE_URL: http://e-commerce-discovery-service:8761/eureka
       -CONFIG_SERVICE_URL: http://e-commerce-config-service:9999
     depends_on:
       e-commerce-config-service:
         condition: service_healthy
+=======
+      - DISCOVERY_SERVICE_URL=http://e-commerce-discovery-service:8761/eureka
+      - CONFIG_SERVICE_URL=http://e-commerce-config-service:9999
+    depends_on:
+      e-commerce-config-service:
+        condition: service_healthy
+      postgres_db:
+        condition: service_healthy
+>>>>>>> da9bb9b1041c37dc0718d642a58f72301dc6b95e
   e-commerce-order-service:
     build: ./order-service
     container_name: e-commerce-order-service
@@ -71,9 +124,21 @@ services:
     expose:
       - '8085'
     environment:
+<<<<<<< HEAD
       -DISCOVERY_SERVICE_URL: http://e-commerce-discovery-service:8761/eureka
       -CONFIG_SERVICE_URL: http://e-commerce-config-service:9999
     depends_on:
       e-commerce-config-service:
         condition: service_healthy
-
+=======
+      - DISCOVERY_SERVICE_URL=http://e-commerce-discovery-service:8761/eureka
+      - CONFIG_SERVICE_URL=http://e-commerce-config-service:9999
+    depends_on:
+      e-commerce-config-service:
+        condition: service_healthy
+      postgres_db:
+        condition: service_healthy
+volumes:
+  postgres_db:
+    driver: local
+>>>>>>> da9bb9b1041c37dc0718d642a58f72301dc6b95e

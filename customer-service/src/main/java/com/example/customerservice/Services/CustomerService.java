@@ -16,6 +16,7 @@ public class CustomerService {
     public CustomerService(CustomerRepository customerRepository)
     {this.customerRepository = customerRepository;}
 
+    @Transactional
     public customer create(CustomerDto customerDto){
         return customerRepository.save(customer.builder()
                     .id(customerDto.getId())

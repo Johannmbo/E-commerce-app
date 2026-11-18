@@ -17,7 +17,7 @@ public class Discount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String productId;
-    private double discountPercent;
+    private int discountPercent;
 
     @OneToOne(mappedBy = "discount")   // Указывает, что связь
     private Product product;

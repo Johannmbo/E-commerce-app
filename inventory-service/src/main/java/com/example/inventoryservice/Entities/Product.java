@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor @NoArgsConstructor
 @Data
 @Builder
-@Table(name = "product")
+@Table(name = "products")
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,8 +21,8 @@ public class Product {
     private String quality;
     private int price;
 
-    @OneToOne(fetch = FetchType.EAGER, optional = true)
-    @JoinColumn(name = "discount_id", referencedColumnName = "id") // Внешний ключ
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id", referencedColumnName = "id") // Внешний ключ
     private Discount discount;
 
 }
