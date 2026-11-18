@@ -1,20 +1,5 @@
 # E-commerce App - microservices Spring Boot
 
-Application e-commerce découpée en microservices **Spring Boot 3 / Spring Cloud** :
-annuaire de services **Eureka**, configuration centralisée **Spring Cloud Config**,
-base **PostgreSQL**, et un **back-office web en React** pour gérer produits,
-clients, commandes et factures.
-
----
-
-- Au démarrage, chaque service métier récupère sa configuration (datasource,
-  Eureka, JPA…) auprès du **config-service**, qui la lit dans le dépôt
-  [`Johannmbo/git-config-repo`](https://github.com/Johannmbo/git-config-repo).
-- Les services s’enregistrent dans **Eureka** (`discovery-service`).
-- Les 4 services métier partagent la base PostgreSQL `ecommerce_app` ; chacun
-  gère ses propres tables (`spring.jpa.hibernate.ddl-auto=update`).
-- Le frontend appelle directement les services, à travers un proxy (Vite en
-  développement, nginx en Docker), car les services n’ont pas de configuration CORS.
 
 ## Services
 
@@ -35,9 +20,9 @@ Les `Dockerfile` des services copient le JAR déjà compilé (`target/*.jar`) : 
 donc **compiler avant** de construire les images.
 
 ```bash
-# 1. Compiler chaque service
+# 1. Compiler chaque service (Windows : mvnw.cmd)
 for s in discovery-service config-service customer-service inventory-service order-service billing-service; do
-  (cd $s && mvn -DskipTests package)
+  (cd $s && ./mvnw -DskipTests package)
 done
 
 # 2. Construire et lancer
@@ -69,12 +54,12 @@ Ensuite :
 2. **Lancer les services dans cet ordre**, chacun dans son terminal :
 
    ```bash
-   cd discovery-service && mvn spring-boot:run   # attendre http://localhost:8761
-   cd config-service    && mvn spring-boot:run   # attendre http://localhost:9999/actuator/health
-   cd customer-service  && mvn spring-boot:run
-   cd inventory-service && mvn spring-boot:run
-   cd order-service     && mvn spring-boot:run
-   cd billing-service   && mvn spring-boot:run
+   cd discovery-service && ./mvnw spring-boot:run   # attendre http://localhost:8761
+   cd config-service    && ./mvnw spring-boot:run   # attendre http://localhost:9999/actuator/health
+   cd customer-service  && ./mvnw spring-boot:run
+   cd inventory-service && ./mvnw spring-boot:run
+   cd order-service     && ./mvnw spring-boot:run
+   cd billing-service   && ./mvnw spring-boot:run
    ```
 
 3. **Frontend** :
