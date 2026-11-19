@@ -3,12 +3,10 @@ services:
     image: postgres:18
     container_name: postgres_database
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=1234
-      - POSTGRES_DB=ecommerce_app
+      - .env.dev
     ports:
           - '5432:5432'
-    volumes:
+    volumes: 
       - postgres_db:/var/lib/postgresql
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "postgres" ]
@@ -33,7 +31,7 @@ services:
     expose:
       - '9999'
     environment:
-      - DISCOVERY_SERVICE_URL=http://e-commerce-discovery-service:8761/eureka
+      - .env.dev
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:9999/actuator/health" ]
       interval: 10s
@@ -48,8 +46,7 @@ services:
     expose:
       - '8082'
     environment:
-      - DISCOVERY_SERVICE_URL=http://e-commerce-discovery-service:8761/eureka
-      - CONFIG_SERVICE_URL=http://e-commerce-config-service:9999
+      - .env.dev
     depends_on:
       e-commerce-config-service:
         condition: service_healthy
@@ -63,8 +60,7 @@ services:
     expose:
       - '8083'
     environment:
-      - DISCOVERY_SERVICE_URL=http://e-commerce-discovery-service:8761/eureka
-      - CONFIG_SERVICE_URL=http://e-commerce-config-service:9999
+      - .env.dev
     depends_on:
       e-commerce-config-service:
         condition: service_healthy
@@ -78,8 +74,7 @@ services:
     expose:
       - '8084'
     environment:
-      - DISCOVERY_SERVICE_URL=http://e-commerce-discovery-service:8761/eureka
-      - CONFIG_SERVICE_URL=http://e-commerce-config-service:9999
+      - .env.dev
     depends_on:
       e-commerce-config-service:
         condition: service_healthy
@@ -93,8 +88,7 @@ services:
     expose:
       - '8085'
     environment:
-      - DISCOVERY_SERVICE_URL=http://e-commerce-discovery-service:8761/eureka
-      - CONFIG_SERVICE_URL=http://e-commerce-config-service:9999
+      - .env.dev
     depends_on:
       e-commerce-config-service:
         condition: service_healthy
