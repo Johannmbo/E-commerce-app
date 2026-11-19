@@ -30,7 +30,7 @@ docker compose up --build
 ```
 
 Ordre de démarrage géré par les `healthcheck` / `depends_on` :
-PostgreSQL et Eureka → config-service → services métier → frontend.
+PostgreSQL et Eureka → config-service → services métier → frontend.e
 
 Ensuite :
 

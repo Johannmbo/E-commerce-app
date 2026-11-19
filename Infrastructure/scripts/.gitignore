@@ -1,0 +1,12 @@
+.env.dev
+.env.prod
+
+database.dump
+database-clean.dump
+snapshot.snapshot
+snapshot-clean.snapshot
+
+loadtest/.venv/
+loadtest/results/
+loadtest/data/sessions_cache.json
+loadtest/**/__pycache__/
